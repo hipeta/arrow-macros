@@ -78,7 +78,9 @@
                   (let* ((exp (cond ((member <> (flatten exp)) exp)
                                     (spear-p `(->> ,<> ,exp))
                                     (t `(-> ,<> ,exp))))
-                         (exp (if some-p `(or ,exp (return-from ,gblock nil)) exp)))
+                         (exp (if (and next-exp some-p)
+                                  `(or ,exp (return-from ,gblock nil))
+                                  exp)))
                     (if next-exp `(setf ,<> ,exp) exp))))))))
 
 (defmacro -<> (init &body exps) (diamond-wand init exps))
