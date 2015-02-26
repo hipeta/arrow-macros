@@ -7,7 +7,7 @@ Cl-thread-macro provides clojure-like thread macros and diamond wands in swiss-a
 
 ### Clojure-like macros
 
-These macro features are equivalent to clojure's ones.
+These macro functions are equivalent to clojure's ones.
 
 - ->
 - ->>
