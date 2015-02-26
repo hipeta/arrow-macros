@@ -37,7 +37,7 @@
                 ,(let ((init `(or ,init (return-from ,gblock nil))))
                       (if >>-p
                           (reduce (lambda (e1 e2)
-                                    `(or (append ,e2 ,(cons e1 nil)) (return-from ,gblock nil)))
+                                    `(or ,(append e2 (cons e1 nil)) (return-from ,gblock nil)))
                                   (cons init exps))
                           (reduce (lambda (e1 e2)
                                     `(or (,(car e2) ,e1 ,@(cdr e2)) (return-from ,gblock nil)))
