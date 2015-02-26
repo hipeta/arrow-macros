@@ -62,7 +62,7 @@
 (defun cond-thread-macro (init exps &optional >>-p)
   (let ((gvar (gensym)) (arrow (if >>-p '->> '->)))
     `(-> ,init
-       ,@(loop for (pred form) in exps by #'cddr
+       ,@(loop for (pred form) on exps by #'cddr
             collect `(lambda (,gvar) (if ,pred (,arrow ,gvar ,form) ,gvar))))))
 
 (defmacro cond-> (init &body exps) (cond-thread-macro init exps))
