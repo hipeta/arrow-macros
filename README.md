@@ -35,4 +35,4 @@ These macro functions are equivalent to them too.
 
 ## License
 
-cl-thread-macro is under the MIT License, see LICENSE file.
+Cl-thread-macro is under the MIT License, see LICENSE file.
