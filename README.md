@@ -25,7 +25,7 @@ These macro functions are equivalent to them too.
 - -<>
 - -<>>
 - some-<>
-- some-<>>git@github.com:hipeta/cl-thread-macro.git
+- some-<>>
 
 ## Installation
 
