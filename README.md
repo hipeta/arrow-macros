@@ -1,9 +1,9 @@
-# cl-thread-macro
+# Cl-thread-macro
 
-cl-thread-macro provides clojure-like thread macros and diamond wands in swiss-arrows (https://github.com/rplevy/swiss-arrows).
+Cl-thread-macro provides clojure-like thread macros and diamond wands in swiss-arrows (https://github.com/rplevy/swiss-arrows).
 
 
-## Macros
+## APIs
 
 ### Clojure-like macros
 
@@ -25,7 +25,7 @@ These macro features are equivalent to them too.
 - -<>
 - -<>>
 - some-<>
-- some-<>>
+- some-<>>git@github.com:hipeta/cl-thread-macro.git
 
 ## Installation
 
