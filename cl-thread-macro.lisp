@@ -38,14 +38,15 @@
     (cond (some-p
            (let ((gblock (gensym)))
              `(block ,gblock
-                ,(let ((init `(or ,init (return-from ,gblock nil))))
-                      (if >>-p
-                          (reduce (lambda (e1 e2)
-                                    `(or ,(append e2 (cons e1 nil)) (return-from ,gblock nil)))
-                                  (cons init exps))
-                          (reduce (lambda (e1 e2)
-                                    `(or (,(car e2) ,e1 ,@(cdr e2)) (return-from ,gblock nil)))
-                                  (cons init exps)))))))
+                ,(cadr
+                  (let ((init `(or ,init (return-from ,gblock nil))))
+                    (if >>-p
+                        (reduce (lambda (e1 e2)
+                                  `(or ,(append e2 (cons e1 nil)) (return-from ,gblock nil)))
+                                (cons init exps))
+                        (reduce (lambda (e1 e2)
+                                  `(or (,(car e2) ,e1 ,@(cdr e2)) (return-from ,gblock nil)))
+                                (cons init exps))))))))
           (>>-p (reduce (lambda (e1 e2) (append e2 (cons e1 nil))) (cons init exps)))
           (t (reduce (lambda (e1 e2) `(,(car e2) ,e1 ,@(cdr e2))) (cons init exps))))))
 
