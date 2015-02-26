@@ -26,9 +26,13 @@
   (let ((exps (mapcar (lambda (exp)
                         (cond ((symbolp exp) `(,exp))
                               ((and (typep exp 'cons) (eq 'function (car exp)))
-                               `(->> (funcall (function ,(cadr exp)))))
+                               (if >>-p
+                                   `(funcall (function ,(cadr exp)))
+                                   `(->> (funcall (function ,(cadr exp))))))
                               ((and (typep exp 'cons) (eq 'lambda (car exp)))
-                               `(->> (funcall ,exp)))
+                               (if >>-p
+                                   `(funcall ,exp)
+                                   `(->> (funcall ,exp))))
                               (t exp)))
                       exps)))
     (cond (some-p
