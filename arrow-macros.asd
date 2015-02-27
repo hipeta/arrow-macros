@@ -1,4 +1,4 @@
-;;;; cl-thread-macro.asd
+;;;; arrow-macros.asd
 ;;;;  
 ;;;; Copyright 2015 hipeta (rhipeta@gmail.com)
 ;;;;
@@ -6,15 +6,15 @@
 ;;;; http://opensource.org/licenses/mit-license.php
 
 (in-package :cl-user)
-(defpackage cl-thread-macro-asd
+(defpackage arrow-macros-asd
   (:use :cl :asdf))
-(in-package :cl-thread-macro-asd)
+(in-package :arrow-macros-asd)
 
-(defsystem cl-thread-macro
+(defsystem arrow-macros
   :serial t
   :author "hipeta"
   :license "MIT"
-  :description "cl-thread-macro provides clojure-like thread macros and diamond wands."
+  :description "arrow-macros provides clojure-like arrow macros and diamond wands."
   :depends-on (:alexandria)
-  :components ((:file "cl-thread-macro")))
+  :components ((:file "arrow-macros")))
 

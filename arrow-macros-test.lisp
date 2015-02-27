@@ -1,4 +1,4 @@
-;;;; cl-thread-macro-test.lisp
+;;;; arrow-macros-test.lisp
 ;;;;  
 ;;;; Copyright 2015 hipeta (rhipeta@gmail.com)
 ;;;;
@@ -6,9 +6,9 @@
 ;;;; http://opensource.org/licenses/mit-license.php
 
 (in-package :cl-user)
-(defpackage cl-thread-macro-test
-  (:use :cl :fiveam :cl-thread-macro))
-(in-package :cl-thread-macro-test)
+(defpackage arrow-macros-test
+  (:use :cl :fiveam :arrow-macros))
+(in-package :arrow-macros-test)
 
 (def-suite all)
 (in-suite all)

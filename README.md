@@ -1,6 +1,6 @@
-# Cl-thread-macro
+# Arrow-macros
 
-Cl-thread-macro provides clojure-like thread macros and diamond wands in swiss-arrows (https://github.com/rplevy/swiss-arrows).
+Arrow-macros provides clojure-like arrow macros (cf. ->, ->>) and diamond wands in swiss-arrows (https://github.com/rplevy/swiss-arrows).
 
 ## Examples
 
@@ -54,10 +54,10 @@ These macro functions are equivalent to them too.
 
 ## Installation
 
-1. Download cl-thread-macro from git.
+1. Download arrow-macros from git.
 1. Move the directory to quicklisp local-project.
-1. (ql:quickload :cl-thread-macro)
+1. (ql:quickload :arrow-macros)
 
 ## License
 
-Cl-thread-macro is under the MIT License, see LICENSE file.
+Arrow-macros is under the MIT License, see LICENSE file.

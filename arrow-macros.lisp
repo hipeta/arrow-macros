@@ -1,4 +1,4 @@
-;;;; cl-thread-macro.lisp
+;;;; arrow-macros.lisp
 ;;;;  
 ;;;; Copyright 2015 hipeta (rhipeta@gmail.com)
 ;;;;
@@ -6,7 +6,7 @@
 ;;;; http://opensource.org/licenses/mit-license.php
 
 (in-package :cl-user)
-(defpackage cl-thread-macro
+(defpackage arrow-macros
   (:use :cl)
   (:import-from :alexandria :flatten)
   (:export :->
@@ -20,9 +20,9 @@
            :-<>>
            :some-<>
            :some-<>>))
-(in-package :cl-thread-macro)
+(in-package :arrow-macros)
 
-(defun thread-macro (init exps &optional >>-p some-p)
+(defun arrow-macro (init exps &optional >>-p some-p)
   (let ((exps (mapcar (lambda (exp)
                         (cond ((symbolp exp) `(,exp))
                               ((and (typep exp 'cons) (eq 'function (car exp)))
@@ -50,24 +50,24 @@
           (>>-p (reduce (lambda (e1 e2) (append e2 (cons e1 nil))) (cons init exps)))
           (t (reduce (lambda (e1 e2) `(,(car e2) ,e1 ,@(cdr e2))) (cons init exps))))))
 
-(defmacro -> (init &body exps) (thread-macro init exps))
-(defmacro ->> (init &body exps) (thread-macro init exps t))
-(defmacro some-> (init &body exps) (thread-macro init exps nil t))
-(defmacro some->> (init &body exps) (thread-macro init exps t t))
+(defmacro -> (init &body exps) (arrow-macro init exps))
+(defmacro ->> (init &body exps) (arrow-macro init exps t))
+(defmacro some-> (init &body exps) (arrow-macro init exps nil t))
+(defmacro some->> (init &body exps) (arrow-macro init exps t t))
 
 (defmacro as-> (init var &body exps)
   `(let ((,var ,init))
      ,@(loop for (exp next-exp) on exps
           collect (if next-exp `(setf ,var ,exp) exp))))
 
-(defun cond-thread-macro (init exps &optional >>-p)
+(defun cond-arrow-macro (init exps &optional >>-p)
   (let ((gvar (gensym)) (arrow (if >>-p '->> '->)))
     `(-> ,init
        ,@(loop for (pred form) on exps by #'cddr
             collect `(lambda (,gvar) (if ,pred (,arrow ,gvar ,form) ,gvar))))))
 
-(defmacro cond-> (init &body exps) (cond-thread-macro init exps))
-(defmacro cond->> (init &body exps) (cond-thread-macro init exps t))
+(defmacro cond-> (init &body exps) (cond-arrow-macro init exps))
+(defmacro cond->> (init &body exps) (cond-arrow-macro init exps t))
 
 (defun diamond-wand (init exps &optional spear-p some-p)
   (symbol-macrolet ((<> (intern "<>")))
