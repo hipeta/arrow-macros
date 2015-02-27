@@ -1,6 +1,6 @@
 # Arrow-macros
 
-Arrow-macros provides clojure-like arrow macros (cf. ->, ->>) and diamond wands in swiss-arrows (https://github.com/rplevy/swiss-arrows).
+Arrow-macros provides clojure-like arrow macros (ex. ->, ->>) and diamond wands in swiss-arrows (https://github.com/rplevy/swiss-arrows).
 
 ## Examples
 
