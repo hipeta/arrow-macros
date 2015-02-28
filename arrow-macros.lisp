@@ -72,19 +72,24 @@
 (defun diamond-wand (init exps &optional spear-p some-p)
   (symbol-macrolet ((<> (intern "<>")))
     (let ((gblock (gensym)))
-      `(block ,gblock
-         (let ((,<> ,(if some-p `(or ,init (return-from ,gblock nil)) init)))
-           ,@(loop for (exp next-exp) on exps collect
-                  (let* ((exp (cond ((member <> (flatten exp)) exp)
-                                    (spear-p `(->> ,<> ,exp))
-                                    (t `(-> ,<> ,exp))))
-                         (exp (if (and next-exp some-p)
-                                  `(or ,exp (return-from ,gblock nil))
-                                  exp)))
-                    (if next-exp `(setf ,<> ,exp) exp))))))))
+      (if some-p
+          `(block ,gblock
+             (let ((,<> (or ,init (return-from ,gblock nil))))
+               ,@(loop for (exp next-exp) on exps collect
+                      (let ((exp (cond ((member <> (flatten exp)) exp)
+                                        (spear-p `(->> ,<> ,exp))
+                                        (t `(-> ,<> ,exp)))))
+                        (if next-exp
+                            `(setf ,<> (or ,exp (return-from ,gblock nil)))
+                            exp)))))
+          `(let ((,<> ,init))
+             ,@(loop for (exp next-exp) on exps collect
+                    (let ((exp (cond ((member <> (flatten exp)) exp)
+                                      (spear-p `(->> ,<> ,exp))
+                                      (t `(-> ,<> ,exp)))))
+                      (if next-exp `(setf ,<> ,exp) exp))))))))
 
 (defmacro -<> (init &body exps) (diamond-wand init exps))
 (defmacro -<>> (init &body exps) (diamond-wand init exps t))
 (defmacro some-<> (init &body exps) (diamond-wand init exps nil t))
 (defmacro some-<>> (init &body exps) (diamond-wand init exps t t))
-
