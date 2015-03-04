@@ -54,7 +54,9 @@ These macro functions are equivalent to them too.
 
 ## Installation
 
-1. (ql:quickload :arrow-macros)
+```
+(ql:quickload :arrow-macros)
+```
 
 ## License
 
