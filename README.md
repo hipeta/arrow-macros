@@ -54,8 +54,6 @@ These macro functions are equivalent to them too.
 
 ## Installation
 
-1. Download arrow-macros from git.
-1. Move the directory to quicklisp local-project.
 1. (ql:quickload :arrow-macros)
 
 ## License
