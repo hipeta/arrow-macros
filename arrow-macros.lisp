@@ -8,7 +8,7 @@
 (in-package :cl-user)
 (defpackage arrow-macros
   (:use :cl)
-  (:import-from :alexandria :flatten)
+  (:import-from :let-over-lambda :flatten)
   (:export :->
            :->>
            :some->

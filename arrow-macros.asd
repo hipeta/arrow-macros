@@ -15,6 +15,6 @@
   :author "hipeta"
   :license "MIT"
   :description "arrow-macros provides clojure-like arrow macros and diamond wands."
-  :depends-on (:alexandria)
+  :depends-on (:let-over-lambda)
   :components ((:file "arrow-macros")))
 
