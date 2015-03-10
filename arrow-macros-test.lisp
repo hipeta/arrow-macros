@@ -111,3 +111,6 @@
         (= (+ x y) 6)))
   (is (null (some-<>> nil (cons 3))))
   (is (null (some-<>> 3 (cons 4) not not))))
+
+(test sbcl-backquote-test
+  (is (equal (-<> 3 (list 3 `(,<> ,<>) 4)) '(3 (3 3) 4))))
