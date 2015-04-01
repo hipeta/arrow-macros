@@ -114,3 +114,11 @@
 
 (test sbcl-backquote-test
   (is (equal (-<> 3 (list 3 `(,<> ,<>) 4)) '(3 (3 3) 4))))
+
+(test <>-symbol-interpretation-test
+  (is (equal (-<>> (list 1 2 3 4 5)
+               (mapcar (lambda (x) (-<> x (+ <> <>)))))
+             (-<>> (list 1 2 3 4 5)
+               (mapcar (lambda (x) (-<> x (+ <> <>))) <>)))))
+
+
