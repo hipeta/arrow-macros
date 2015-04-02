@@ -69,7 +69,7 @@
 (defmacro cond-> (init &body exps) (cond-arrow-macro init exps))
 (defmacro cond->> (init &body exps) (cond-arrow-macro init exps t))
 
-(defun find-free-and-<>-symbol (form env)
+(defun find-free-and-<>-symbol% (form env)
   (handler-bind ((hu.dwim.walker:walker-warning #'muffle-warning))
     (let* ((walked (hu.dwim.walker:walk-form
                     form
@@ -83,6 +83,11 @@
                           :type 'hu.dwim.walker:unwalked-lexical-variable-reference-form))))
       (find (intern "<>") (mapcar #'hu.dwim.walker:name-of refs)))))
 
+(defun find-free-and-<>-symbol (form env)
+    (handler-case (find-free-and-<>-symbol% form env)
+      #+sbcl(sb-kernel::arg-count-error () nil)
+      #-sbcl(error () nil)))
+
 (defun diamond-wand (init exps env &optional spear-p some-p)
   (symbol-macrolet ((<> (intern "<>")))
     (let ((gblock (gensym)))
@@ -91,8 +96,8 @@
              (let ((,<> (or ,init (return-from ,gblock nil))))
                ,@(loop for (exp next-exp) on exps collect
                       (let ((exp (cond ((find-free-and-<>-symbol exp env) exp)
-                                       (spear-p (macroexpand `(->> ,<> ,exp)))
-                                       (t (macroexpand `(-> ,<> ,exp))))))
+                                       (spear-p `(->> ,<> ,exp))
+                                       (t `(-> ,<> ,exp)))))
                         (if next-exp
                             `(setf ,<> (or ,exp (return-from ,gblock nil)))
                             exp)))))
