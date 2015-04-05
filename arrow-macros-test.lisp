@@ -115,3 +115,15 @@
 (test sbcl-backquote-test
   (is (equal (-<> 3 (list 3 `(,<> ,<>) 4)) '(3 (3 3) 4))))
 
+(test <>-symbol-interpretation-test
+  (is (equal (-<>> (list 1 2 3 4 5)
+               (mapcar (lambda (x) (-<> x (+ <> <>)))))
+             (-<>> (list 1 2 3 4 5)
+               (mapcar (lambda (x) (-<> x (+ <> <>))) <>)))))
+
+(test diamond-wand-includes-macro-exps-test
+  (is (equal (let (p) (-<> 3 (push p))) '(3)))
+  (is (equal (let (p) (-<> 3 (push p) (push p) (push p)
+                           (-<>> <> (mapcar (lambda (x) (-<> x (listp <>)))))))
+             (list t t nil))))
+

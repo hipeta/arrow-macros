@@ -69,14 +69,33 @@
 (defmacro cond-> (init &body exps) (cond-arrow-macro init exps))
 (defmacro cond->> (init &body exps) (cond-arrow-macro init exps t))
 
-(defun diamond-wand (init exps &optional spear-p some-p)
+(defun find-free-and-<>-symbol% (form env)
+  (handler-bind ((hu.dwim.walker:walker-warning #'muffle-warning))
+    (let* ((walked (hu.dwim.walker:walk-form
+                    form
+                    :environment (hu.dwim.walker:make-walk-environment env)))
+           (refs (hu.dwim.walker:collect-variable-references
+                  walked
+                  :type 'hu.dwim.walker:free-variable-reference-form))
+           (refs (append refs
+                         (hu.dwim.walker:collect-variable-references
+                          walked
+                          :type 'hu.dwim.walker:unwalked-lexical-variable-reference-form))))
+      (find (intern "<>") (mapcar #'hu.dwim.walker:name-of refs)))))
+
+(defun find-free-and-<>-symbol (form env)
+    (handler-case (find-free-and-<>-symbol% form env)
+      #+sbcl(sb-kernel::arg-count-error () nil)
+      #-sbcl(error () nil)))
+
+(defun diamond-wand (init exps env &optional spear-p some-p)
   (symbol-macrolet ((<> (intern "<>")))
     (let ((gblock (gensym)))
       (if some-p
           `(block ,gblock
              (let ((,<> (or ,init (return-from ,gblock nil))))
                ,@(loop for (exp next-exp) on exps collect
-                      (let ((exp (cond ((member <> (flatten exp)) exp)
+                      (let ((exp (cond ((find-free-and-<>-symbol exp env) exp)
                                        (spear-p `(->> ,<> ,exp))
                                        (t `(-> ,<> ,exp)))))
                         (if next-exp
@@ -84,12 +103,12 @@
                             exp)))))
           `(let ((,<> ,init))
              ,@(loop for (exp next-exp) on exps collect
-                    (let ((exp (cond ((member <> (flatten exp)) exp)
+                    (let ((exp (cond ((find-free-and-<>-symbol exp env) exp)
                                      (spear-p `(->> ,<> ,exp))
                                      (t `(-> ,<> ,exp)))))
                       (if next-exp `(setf ,<> ,exp) exp))))))))
 
-(defmacro -<> (init &body exps &environment env) (diamond-wand init exps))
-(defmacro -<>> (init &body exps &environment env) (diamond-wand init exps t))
-(defmacro some-<> (init &body exps &environment env) (diamond-wand init exps nil t))
-(defmacro some-<>> (init &body exps &environment env) (diamond-wand init exps t t))
+(defmacro -<> (init &body exps &environment env) (diamond-wand init exps env))
+(defmacro -<>> (init &body exps &environment env) (diamond-wand init exps env t))
+(defmacro some-<> (init &body exps &environment env) (diamond-wand init exps env nil t))
+(defmacro some-<>> (init &body exps &environment env) (diamond-wand init exps env t t))
