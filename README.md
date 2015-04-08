@@ -44,7 +44,7 @@ These macro functions are equivalent to clojure's ones.
 
 ### Diamond wands
 
-These wonderful macros are developed by clojure's library swiss-arrows (https://github.com/rplevy/swiss-arrows).
+These wonderful macros are developed in clojure's library swiss-arrows (https://github.com/rplevy/swiss-arrows).
 These macro functions are equivalent to them too.
 
 - -<>
