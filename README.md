@@ -60,7 +60,7 @@ These macro functions are equivalent to them too.
 
 ## Notes
 
-(2015/04/09)
+(April 9, 2015)
 
 If you use sbcl on windows, this library could not be built on your system.
 Because this library uses hu.dwim.util (via hu.dwim.walker) on current version (see issue [#1](https://github.com/hipeta/arrow-macros/issues/1)) and the quicklisp dist update in April 2015 has not included hu.dwim.util recently updates.
