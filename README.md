@@ -63,9 +63,9 @@ These macro functions are equivalent to them too.
 (2015/04/09)
 
 If you use sbcl on windows, this library could not be built on your system.
-Because this library uses hu.dwim.util on current version (see issue #1) and the quicklisp dist update in April 2015 has not included hu.dwim.util recently updates.
+Because this library uses hu.dwim.util on current version (see issue [#1](/hipeta/arrow-macros/issues/1)) and the quicklisp dist update in April 2015 has not included hu.dwim.util recently updates.
 This would be resolved in the next month quicklisp dist update, probably.
-But if you want to use this library on sbcl for windows immediately, version 0.2.1 is available. (This version has issue #1 problem, but it is edge case, I think)
+But if you want to use this library on sbcl for windows immediately, version 0.2.1 is available. (This version has issue [#1](/hipeta/arrow-macros/issues/1) problem, but it is edge case, I think)
 
 ## License
 
