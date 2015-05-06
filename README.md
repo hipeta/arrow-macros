@@ -64,12 +64,14 @@ These macro functions are equivalent to them too.
 
 On sbcl for windows, arrow-macros can be built now.
 
-==(April 9, 2015)==
+<del>
+(April 9, 2015)
 
-==If you use sbcl on windows, this library could not be built on your system.==
-==Because this library uses hu.dwim.util (via hu.dwim.walker) on current version (see issue [#1](https://github.com/hipeta/arrow-macros/issues/1)) and the quicklisp dist update in April 2015 has not included hu.dwim.util latest updates.==
-==This would be resolved in the next month quicklisp dist update, probably.==
-==But if you want to use this library on sbcl for windows immediately, version 0.2.1 is available. (This version has issue [#1](https://github.com/hipeta/arrow-macros/issues/1) problem, but it is edge case, I think)==
+If you use sbcl on windows, this library could not be built on your system.
+Because this library uses hu.dwim.util (via hu.dwim.walker) on current version (see issue [#1](https://github.com/hipeta/arrow-macros/issues/1)) and the quicklisp dist update in April 2015 has not included hu.dwim.util latest updates.
+This would be resolved in the next month quicklisp dist update, probably.
+But if you want to use this library on sbcl for windows immediately, version 0.2.1 is available. (This version has issue [#1](https://github.com/hipeta/arrow-macros/issues/1) problem, but it is edge case, I think)
+</del>
 
 ## License
 
