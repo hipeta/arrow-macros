@@ -16,5 +16,6 @@
   :license "MIT"
   :description "arrow-macros provides clojure-like arrow macros and diamond wands."
   :depends-on (:hu.dwim.walker)
-  :components ((:file "arrow-macros")))
+  :components ((:file "arrow-macros"))
+  :in-order-to ((test-op (test-op :arrow-macros-test))))
 
