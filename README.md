@@ -2,7 +2,7 @@
 
 Arrow-macros provides clojure-like arrow macros (ex. ->, ->>) and diamond wands in swiss-arrows (https://github.com/rplevy/swiss-arrows).
 
-[![Build Status](https://travis-ci.org/guicho271828/arrow-macros.svg?branch=master)](https://travis-ci.org/guicho271828/arrow-macros)
+[![Build Status](https://travis-ci.org/hipeta/arrow-macros.svg)](https://travis-ci.org/hipeta/arrow-macros)
 
 ## Examples
 
