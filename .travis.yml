@@ -17,13 +17,13 @@ env:
 matrix:
   allow_failures:
     # CIM not available for CMUCL
-    # - env: LISP=cmucl
+    - env: LISP=cmucl
     # free edition --- heap exhausted
     # - env: LISP=allegro
-    # - env: LISP=abcl            # until lisp-namespace is updated
+    # - env: LISP=abcl
     # - env: LISP=clisp
     # - env: LISP=clisp32
-    # - env: LISP=ecl
+    - env: LISP=ecl
 
 # either use a local install.sh script or install it via curl. Feel
 # free to simplify this section in your own .travis.yml file.

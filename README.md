@@ -62,6 +62,12 @@ These macro functions are equivalent to them too.
 
 ## Notes
 
+(June 2015)
+
+Build verified on sbcl, ccl, abcl, allegro, clisp.
+Failed on ecl while loading hu.dwim.walker.
+Not tested on cmucl.
+
 (May 7, 2015)
 
 On sbcl for windows, arrow-macros can be built now.
