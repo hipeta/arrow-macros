@@ -65,8 +65,10 @@ These macro functions are equivalent to them too.
 (June 2015)
 
 Build verified on sbcl, ccl, abcl, allegro, clisp.
+But diamond-wand tests fail on abcl, allegro, clisp.
 Failed on ecl while loading hu.dwim.walker.
 Not tested on cmucl.
+(contributed by [guicho271828](https://github.com/guicho271828), thanks!)
 
 (May 7, 2015)
 
