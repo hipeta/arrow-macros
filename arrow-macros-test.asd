@@ -16,5 +16,7 @@
   :license "MIT"
   :description "arrow-macros test"
   :depends-on (:fiveam :arrow-macros)
-  :components ((:file "arrow-macros-test")))
+  :components ((:file "arrow-macros-test"))
+  :perform (test-op (op c)
+             (eval (read-from-string "(fiveam::run! 'arrow-macros-test::all)"))))
 

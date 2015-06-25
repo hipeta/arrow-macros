@@ -18,7 +18,8 @@
            :-<>
            :-<>>
            :some-<>
-           :some-<>>))
+           :some-<>>
+           :<>))
 (in-package :arrow-macros)
 
 (defun arrow-macro (init exps &optional >>-p some-p)
@@ -68,7 +69,9 @@
 (defmacro cond-> (init &body exps) (cond-arrow-macro init exps))
 (defmacro cond->> (init &body exps) (cond-arrow-macro init exps t))
 
-(defun find-<>-variable-in-same-context% (form env)
+;; (define-symbol-macro <> (error "do not use <> outside the scope of diamond-wand macros!"))
+
+(defun has-diamond% (form env)
   (handler-bind ((hu.dwim.walker:walker-warning #'muffle-warning))
     (let* ((walked (hu.dwim.walker:walk-form
                     form
@@ -80,32 +83,34 @@
                          (hu.dwim.walker:collect-variable-references
                           walked
                           :type 'hu.dwim.walker:unwalked-lexical-variable-reference-form))))
-      (find (intern "<>") (mapcar #'hu.dwim.walker:name-of refs)))))
+      (find '<> (mapcar #'hu.dwim.walker:name-of refs)))))
 
-(defun find-<>-variable-in-same-context (form env)
-    (handler-case (find-<>-variable-in-same-context% form env)
-      #+sbcl(sb-kernel::arg-count-error () nil)
-      #-sbcl(error () nil)))
+(defun has-diamond (form env)
+  "Return true when the form uses <> as a variable reference."
+  ;; Note that simple tree parsing does not work for the cases like
+  ;; (let ((<> ...)) ...)
+  (handler-case (has-diamond% form env)
+    #+sbcl(sb-kernel::arg-count-error () nil)
+    #-sbcl(error () nil)))
 
 (defun diamond-wand (init exps env &optional spear-p some-p)
-  (symbol-macrolet ((<> (intern "<>")))
-    (let ((gblock (gensym)))
-      (if some-p
-          `(block ,gblock
-             (let ((,<> (or ,init (return-from ,gblock nil))))
+  (let ((gblock (gensym)))
+    (if some-p
+        `(block ,gblock
+           (let ((<> (or ,init (return-from ,gblock nil))))
                ,@(loop for (exp next-exp) on exps collect
-                      (let ((exp (cond ((find-<>-variable-in-same-context exp env) exp)
-                                       (spear-p `(->> ,<> ,exp))
-                                       (t `(-> ,<> ,exp)))))
-                        (if next-exp
-                            `(setf ,<> (or ,exp (return-from ,gblock nil)))
+                 (let ((exp (cond ((has-diamond exp env) exp)
+                                  (spear-p `(->> <> ,exp))
+                                  (t `(-> <> ,exp)))))
+                   (if next-exp
+                       `(setf <> (or ,exp (return-from ,gblock nil)))
                             exp)))))
-          `(let ((,<> ,init))
-             ,@(loop for (exp next-exp) on exps collect
-                    (let ((exp (cond ((find-<>-variable-in-same-context exp env) exp)
-                                     (spear-p `(->> ,<> ,exp))
-                                     (t `(-> ,<> ,exp)))))
-                      (if next-exp `(setf ,<> ,exp) exp))))))))
+        `(let ((<> ,init))
+           ,@(loop for (exp next-exp) on exps collect
+               (let ((exp (cond ((has-diamond exp env) exp)
+                                (spear-p `(->> <> ,exp))
+                                (t `(-> <> ,exp)))))
+                 (if next-exp `(setf <> ,exp) exp)))))))
 
 (defmacro -<> (init &body exps &environment env) (diamond-wand init exps env))
 (defmacro -<>> (init &body exps &environment env) (diamond-wand init exps env t))
