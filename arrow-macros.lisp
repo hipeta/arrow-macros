@@ -93,45 +93,6 @@
     #+sbcl(sb-kernel::arg-count-error () nil)
     #-sbcl(error () nil)))
 
-#|
-
-I strongly object to the inappropriate/implicit use of intern, which
-results in unhealthy macrology.
-
-Imagine a case where a diamond-wand is used in the expansion of another
-macro `mymacro', written by user1. He might export the macro as part of a library.
-
- (in-package :a)
- (use-package :arrow-macros)
- (defmacro mymacro (&body body)
-   `(-<> 42
-         (process-it <>) ;; interned, a::<>
-         ,@body))
- (export 'mymacro)
-
-Now, another lisper called user2 may use this macro
-without knowing that the diamond-wand is used in it.
-
- (in-package :b)
- (use-package :a)
-
- (defvar <> 'something)
-
- (mymacro (print <>))
-
-And the result is unexpected!
-
- -->
- (-<> 42
-      (process-it a::<>)
-      (print b::<>))
-
-It will be interpreted as (process-it a::<> b::<>) and signals an
-symbol-unbound error on a::<>.
-
-|#
-
-
 (defun diamond-wand (init exps env &optional spear-p some-p)
   (let ((gblock (gensym)))
     (if some-p
