@@ -98,19 +98,21 @@
     (if some-p
         `(block ,gblock
            (let ((<> (or ,init (return-from ,gblock nil))))
-               ,@(loop for (exp next-exp) on exps collect
-                 (let ((exp (cond ((has-diamond exp env) exp)
-                                  (spear-p `(->> <> ,exp))
-                                  (t `(-> <> ,exp)))))
-                   (if next-exp
-                       `(setf <> (or ,exp (return-from ,gblock nil)))
-                            exp)))))
+             <>
+             ,@(loop for (exp next-exp) on exps collect
+                    (let ((exp (cond ((has-diamond exp env) exp)
+                                     (spear-p `(->> <> ,exp))
+                                     (t `(-> <> ,exp)))))
+                      (if next-exp
+                          `(setf <> (or ,exp (return-from ,gblock nil)))
+                          exp)))))
         `(let ((<> ,init))
+           <>
            ,@(loop for (exp next-exp) on exps collect
-               (let ((exp (cond ((has-diamond exp env) exp)
-                                (spear-p `(->> <> ,exp))
-                                (t `(-> <> ,exp)))))
-                 (if next-exp `(setf <> ,exp) exp)))))))
+                  (let ((exp (cond ((has-diamond exp env) exp)
+                                   (spear-p `(->> <> ,exp))
+                                   (t `(-> <> ,exp)))))
+                    (if next-exp `(setf <> ,exp) exp)))))))
 
 (defmacro -<> (init &body exps &environment env) (diamond-wand init exps env))
 (defmacro -<>> (init &body exps &environment env) (diamond-wand init exps env t))

@@ -14,18 +14,21 @@
 (in-suite all)
 
 (test ->-test
+  (is (= 3 (-> 3)))
   (is (= (-> 1 (+ 2 3) #'1+ 1+ (lambda (x) (+ x 1)) (1+)) 10))
   (is (equal (-> 1 (cons 2) (cons 3)) (cons (cons 1 2) 3)))
   (is (multiple-value-bind (x y) (-> 3 (1+) (values 2))
         (= (+ x y) 6))))
 
 (test ->>-test
+  (is (= 3 (->> 3)))
   (is (= (->> 1 (+ 2 3) #'1+ 1+ (lambda (x) (+ x 1)) (1+)) 10))
   (is (equal (->> 1 (cons 2) (cons 3)) (cons 3 (cons 2 1))))
   (is (multiple-value-bind (x y) (->> 3 (1+) (values 2))
         (= (+ x y) 6))))
 
 (test some->-test
+  (is (= 3 (some-> 3)))
   (is (= (some-> 1 (+ 2 3) #'1+ 1+ (lambda (x) (+ x 1)) (1+)) 10))
   (is (null (some-> nil (cons 3))))
   (is (null (some-> 3 (cons 4) not not)))
@@ -34,6 +37,7 @@
         (= (+ x y) 6))))
 
 (test some->>-test
+  (is (= 3 (some->> 3)))
   (is (= (some->> 1 (+ 2 3) #'1+ 1+ (lambda (x) (+ x 1)) (1+)) 10))
   (is (null (some->> nil (cons 3))))
   (is (null (some->> 3 (cons 4) not not)))
@@ -81,6 +85,7 @@
         (= (+ x y) 6))))
 
 (test -<>-test
+  (is (= 3 (-<> 3)))
   (is (= (-<> 0 1+ #'1+ (1+) (lambda (x) (+ 1 x)) (1+ <>) (+ <> <>)) 10))
   (is (equal (-<> nil (cons 3) (cons 4) (cons <> <>))
              (cons (cons (cons nil 3) 4) (cons (cons nil 3) 4))))
@@ -88,6 +93,7 @@
         (= (+ x y) 6))))
 
 (test -<>>-test
+  (is (= 3 (-<>> 3)))
   (is (= (-<>> 0 1+ #'1+ (1+) (lambda (x) (+ 1 x)) (1+ <>) (+ <> <>)) 10))
   (is (equal (-<>> nil (cons 3) (cons 4) (cons <> <>))
              (cons (cons 4 (cons 3 nil)) (cons 4 (cons 3 nil)))))
@@ -95,6 +101,7 @@
         (= (+ x y) 6))))
 
 (test some-<>-test
+  (is (= 3 (some-<> 3)))
   (is (= (some-<> 0 1+ #'1+ (1+) (lambda (x) (+ 1 x)) (1+ <>) (+ <> <>)) 10))
   (is (equal (some-<> t (cons 3) (cons 4) (cons <> <>))
              (cons (cons (cons t 3) 4) (cons (cons t 3) 4))))
@@ -104,6 +111,7 @@
   (is (null (some-<> 3 (cons 4) not not))))
 
 (test some-<>>-test
+  (is (= 3 (some-<>> 3)))
   (is (= (some-<>> 0 1+ #'1+ (1+) (lambda (x) (+ 1 x)) (1+ <>) (+ <> <>)) 10))
   (is (equal (some-<>> t (cons 3) (cons 4) (cons <> <>))
              (cons (cons 4 (cons 3 t)) (cons 4 (cons 3 t)))))
