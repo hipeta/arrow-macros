@@ -76,10 +76,9 @@
     (let* ((walked (hu.dwim.walker:walk-form
                     form
                     :environment (hu.dwim.walker:make-walk-environment env)))
-           (refs (hu.dwim.walker:collect-variable-references
-                  walked
-                  :type 'hu.dwim.walker:free-variable-reference-form))
-           (refs (append refs
+           (refs (append (hu.dwim.walker:collect-variable-references
+                          walked
+                          :type 'hu.dwim.walker:free-variable-reference-form)
                          (hu.dwim.walker:collect-variable-references
                           walked
                           :type 'hu.dwim.walker:unwalked-lexical-variable-reference-form))))

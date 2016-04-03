@@ -13,14 +13,14 @@ Arrow-macros provides clojure-like arrow macros (ex. ->, ->>) and diamond wands 
 ```
 (->> (list 1 2 3 4 5)
   (mapcar #'1+)
-  (reduce #'+)) => 20
+  (reduce #'+)) ; => 20
 ```
 
 ```
 (-<> "abcdefghijklmnopqrstuvwxyz"
   (ppcre:scan-to-strings "j.*q" <>)
   (sort #'string>)
-  (string-upcase :end 1)) => "Qponmlkj"
+  (string-upcase :end 1)) ; => "Qponmlkj"
 ```
 
 ```
