@@ -57,6 +57,7 @@
 
 (defmacro as-> (init var &body exps)
   `(let ((,var ,init))
+     ,var
      ,@(loop for (exp next-exp) on exps
           collect (if next-exp `(setf ,var ,exp) exp))))
 

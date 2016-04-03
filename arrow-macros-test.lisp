@@ -46,11 +46,13 @@
         (= (+ x y) 6))))
 
 (test as->-test
+  (is (= 3 (as-> 3 x)))
   (is (= (as-> 4 x (1+ x) (+ x x)) 10))
   (is (multiple-value-bind (x y) (as-> 3 x (1+ x) (values x 2))
         (= (+ x y) 6))))
 
 (test cond->-test
+  (is (= 3 (cond-> 3)))
   (is (= (let ((x '(2 4)))
            (cond-> 0
              (member 1 x) 1+
@@ -68,6 +70,7 @@
         (= (+ x y) 6))))
 
 (test cond->>-test
+  (is (= 3 (cond->> 3)))
   (is (= (let ((x '(2 4)))
            (cond->> 0
              (member 1 x) 1+
