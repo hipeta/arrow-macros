@@ -18,12 +18,13 @@ matrix:
   allow_failures:
     # CIM not available for CMUCL
     - env: LISP=cmucl
-    # free edition --- heap exhausted
-    # - env: LISP=allegro
-    # - env: LISP=abcl
-    # - env: LISP=clisp
-    # - env: LISP=clisp32
+    # hu.dwim.walker does not build
     - env: LISP=ecl
+    # diamond wand does not work
+    - env: LISP=allegro
+    - env: LISP=abcl
+    - env: LISP=clisp
+    - env: LISP=clisp32
 
 # either use a local install.sh script or install it via curl. Feel
 # free to simplify this section in your own .travis.yml file.
