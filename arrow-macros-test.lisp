@@ -123,8 +123,9 @@
   (is (null (some-<>> nil (cons 3))))
   (is (null (some-<>> 3 (cons 4) not not))))
 
-(test sbcl-backquote-test
-  (is (equal (-<> 3 (list 3 `(,<> ,<>) 4)) '(3 (3 3) 4))))
+; obsolte
+;(test sbcl-backquote-test
+;  (is (equal (-<> 3 (list 3 `(,<> ,<>) 4)) '(3 (3 3) 4))))
 
 (test <>-symbol-interpretation-test
   (is (equal (-<>> (list 1 2 3 4 5)
@@ -138,3 +139,50 @@
                            (-<>> <> (mapcar (lambda (x) (-<> x (listp <>)))))))
              (list t t nil))))
 
+(test diamond-wand-implicit-evaluation-test
+  (is (equal (macroexpand-1 '(-<> foo (defun <> (bar (1+ bar)))))
+             '(defun foo (bar (1+ bar))))
+  (is (equal (macroexpand-1 '(-<> foo (defun (bar 1+ bar))))
+             '(defun foo (bar (1+ bar)))))))
+
+(test nested-diamond-wand-test1
+  (is (= (-<> 1 (+ <> <>) (-<> (+ <> <> <>))) 6))
+  (is (equal (macroexpand-1 '(-<> 1 (+ <> <>) (-<> (+ <> <> <>))))
+             '(+ (+ 1 1) (+ 1 1) (+ 1 1)))))
+
+(test nested-diamond-wand-test2
+  (is (= (-<> 1 1+ (1+) #'1+ (lambda (x) (1+ x))
+           (+ <> (-<> <> 1+ (1+) #'1+ (lambda (x) (1+ x)))))
+         14)))
+
+(test nested-diamond-wand-test3
+  (is (= (-<> 1 (+ 4)
+           (+ (-<> <> (+ <> <>))))
+         10)))
+
+(test nested-diamond-wand-test4
+  (is (= (-<> 1 (+ 4)
+           (+ (-<> <> (-<> <> (+ <> <>)))))
+         10)))
+
+(test nested-diamond-wand-test5
+  (is (equal (macroexpand-1 '(-<> 1 (+ 2 (-<> 3))))
+             '(+ 1 2 3)))
+  (is (= (-<> 1 (+ 2 (-<> 3))) 6)))
+
+(test nested-diamond-wand-test6
+  (is (equal (-<>> (list 1 2 3)
+               (mapcar #'1+)
+               (-<> <> (sort #'>))
+               (mapcar #'1+))
+             (list 5 4 3))))
+
+(test nested-diamond-wand-test7
+  (is (null (some-<> nil)))
+  (is (= (some-<> 3 1+ (-<> (+ 4))) 8))
+  (let ((x 3))
+    (is (null (some-<> (list 1 2 3)
+                (-<>> <> (reduce #'+))
+                (= 5)
+                (setf x <>)
+                x)))))

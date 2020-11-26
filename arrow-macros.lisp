@@ -70,51 +70,63 @@
 (defmacro cond-> (init &body exps) (cond-arrow-macro init exps))
 (defmacro cond->> (init &body exps) (cond-arrow-macro init exps t))
 
-;; (define-symbol-macro <> (error "do not use <> outside the scope of diamond-wand macros!"))
+(defparameter *diamond-wands* '(-<> -<>> some-<> some-<>>))
 
-(defun has-diamond% (form env)
-  (handler-bind ((hu.dwim.walker:walker-warning #'muffle-warning))
-    (let* ((walked (hu.dwim.walker:walk-form
-                    form
-                    :environment (hu.dwim.walker:make-walk-environment env)))
-           (refs (append (hu.dwim.walker:collect-variable-references
-                          walked
-                          :type 'hu.dwim.walker:free-variable-reference-form)
-                         (hu.dwim.walker:collect-variable-references
-                          walked
-                          :type 'hu.dwim.walker:unwalked-lexical-variable-reference-form))))
-      (find '<> (mapcar #'hu.dwim.walker:name-of refs)))))
+(defun diamond-wand-symbol-p (sym) (member sym *diamond-wands* :test #'eq))
 
-(defun has-diamond (form env)
-  "Return true when the form uses <> as a variable reference."
-  ;; Note that simple tree parsing does not work for the cases like
-  ;; (let ((<> ...)) ...)
-  (handler-case (has-diamond% form env)
-    #+sbcl(sb-kernel::arg-count-error () nil)
-    #-sbcl(error () nil)))
+(defun has-diamond (exp)
+  (labels ((rec (exp)
+             (cond ((eq exp '<>) t)
+                   ((and (listp exp) (diamond-wand-symbol-p (car exp)))
+                    (rec (cadr exp)))
+                   ((listp exp) (mapcar (lambda (x) (rec x)) exp))
+                   (t nil))))
+    (let ((fexp (alexandria:flatten (rec exp))))
+      (and fexp (reduce (lambda (a b) (or a b)) fexp)))))
 
-(defun diamond-wand (init exps env &optional spear-p some-p)
-  (let ((gblock (gensym)))
+(defun replace-diamond (exp diamond-exp)
+  (cond ((eq exp '<>) diamond-exp)
+        ((and (listp exp) (diamond-wand-symbol-p (car exp)))
+         (let ((init (replace-diamond (cadr exp) diamond-exp)))
+           (case (car exp)
+             (-<>      (diamond-wand init (cddr exp)))
+             (-<>>     (diamond-wand init (cddr exp) t))
+             (some-<>  (diamond-wand init (cddr exp) nil t))
+             (some-<>> (diamond-wand init (cddr exp) t t)))))
+        ((listp exp) (mapcar (lambda (x) (replace-diamond x diamond-exp)) exp))
+        (t exp)))
+
+(defun diamond-wand (init exps &optional >>-p some-p)
+  (let* (; preprocessing for lambda, function, one symbol expressions
+         (exps (loop for exp in exps collect (cond ((symbolp exp) `(,exp))
+                                                   ((and (consp exp) (eq 'function (car exp)))
+                                                    `(funcall ,exp <>))
+                                                   ((and (consp exp) (eq 'lambda (car exp)))
+                                                    `(funcall ,exp <>))
+                                                   (t exp))))
+         ; supplement expressions with diamond symbols
+         (exps (loop for exp in exps collect (cond ((has-diamond exp) exp)
+                                                   (>>-p
+                                                    `(,(car exp) ,@(cdr exp) <>))
+                                                   (t
+                                                    `(,(car exp) <> ,@(cdr exp)))))))
     (if some-p
-        `(block ,gblock
-           (let ((<> (or ,init (return-from ,gblock nil))))
-             <>
-             ,@(loop for (exp next-exp) on exps collect
-                    (let ((exp (cond ((has-diamond exp env) exp)
-                                     (spear-p `(->> <> ,exp))
-                                     (t `(-> <> ,exp)))))
-                      (if next-exp
-                          `(setf <> (or ,exp (return-from ,gblock nil)))
-                          exp)))))
-        `(let ((<> ,init))
-           <>
-           ,@(loop for (exp next-exp) on exps collect
-                  (let ((exp (cond ((has-diamond exp env) exp)
-                                   (spear-p `(->> <> ,exp))
-                                   (t `(-> <> ,exp)))))
-                    (if next-exp `(setf <> ,exp) exp)))))))
+        (let* ((gblock (gensym))
+               (diamond-exp `(or ,init (return-from ,gblock nil))))
+          (loop for exp in exps do
+            (setf diamond-exp (replace-diamond exp diamond-exp)
+                  diamond-exp `(or ,diamond-exp (return-from ,gblock nil))))
+          
+          ; outermost parenthesis shouldn't be sandwiched by `(or ~~ (return-from ,gblock nil))
+          (setf diamond-exp (cadr diamond-exp))
+          
+          `(block ,gblock ,diamond-exp))
+        (let ((diamond-exp init))
+          (loop for exp in exps do (setf diamond-exp (replace-diamond exp diamond-exp)))
+          diamond-exp))))
 
-(defmacro -<> (init &body exps &environment env) (diamond-wand init exps env))
-(defmacro -<>> (init &body exps &environment env) (diamond-wand init exps env t))
-(defmacro some-<> (init &body exps &environment env) (diamond-wand init exps env nil t))
-(defmacro some-<>> (init &body exps &environment env) (diamond-wand init exps env t t))
+(defmacro -<> (init &body exps) (diamond-wand init exps))
+(defmacro -<>> (init &body exps) (diamond-wand init exps t))
+(defmacro some-<> (init &body exps) (diamond-wand init exps nil t))
+(defmacro some-<>> (init &body exps) (diamond-wand init exps t t))
+
