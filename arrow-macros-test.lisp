@@ -141,9 +141,9 @@
 
 (test diamond-wand-implicit-evaluation-test
   (is (equal (macroexpand-1 '(-<> foo (defun <> (bar (1+ bar)))))
-             '(defun foo (bar (1+ bar))))
-  (is (equal (macroexpand-1 '(-<> foo (defun (bar 1+ bar))))
-             '(defun foo (bar (1+ bar)))))))
+             '(defun foo (bar (1+ bar)))))
+  (is (equal (macroexpand-1 '(-<> foo (defun (bar (1+ bar)))))
+             '(defun foo (bar (1+ bar))))))
 
 (test nested-diamond-wand-test1
   (is (= (-<> 1 (+ <> <>) (-<> (+ <> <> <>))) 6))
