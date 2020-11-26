@@ -77,8 +77,11 @@
 (defun has-diamond (exp)
   (labels ((rec (exp)
              (cond ((eq exp '<>) t)
+
+                   ; inner diamond wand can reference outer <> symbol only in initial form
                    ((and (listp exp) (diamond-wand-symbol-p (car exp)))
                     (rec (cadr exp)))
+                   
                    ((listp exp) (mapcar (lambda (x) (rec x)) exp))
                    (t nil))))
     (let ((fexp (alexandria:flatten (rec exp))))
