@@ -78,7 +78,7 @@
   (labels ((rec (exp)
              (cond ((eq exp '<>) t)
 
-                   ; inner diamond wand can reference outer <> symbol only in initial form
+                   ; inner diamond wand can refer to outer <> symbol only in initial form
                    ((and (listp exp) (diamond-wand-symbol-p (car exp)))
                     (rec (cadr exp)))
                    

@@ -92,7 +92,7 @@ Arrow-macros can also write nested diamond-wands like:
 (-<> 1 (+ <> <>) (-<> (+ <> <> <>)))  ; => 6
 ```
 
-Be aware that the inner diamond-wand can reference outer diamond symbol <> only in initial form.
+Be aware that the inner diamond-wand can refer to outer diamond symbol <> only in initial form.
 
 
 
