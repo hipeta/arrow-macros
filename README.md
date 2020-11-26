@@ -30,6 +30,12 @@ Arrow-macros provides clojure-like arrow macros (ex. ->, ->>) and diamond wands 
   json->list)
 ```
 
+## Installation
+
+```
+(ql:quickload :arrow-macros)
+```
+
 ## APIs
 
 ### Clojure-like macros
@@ -47,20 +53,56 @@ These macro functions are equivalent to clojure's ones.
 ### Diamond wands
 
 These wonderful macros are developed in clojure's library swiss-arrows (https://github.com/rplevy/swiss-arrows).
-These macro functions are equivalent to them too.
+These macro functions are almost equivalent to them too.
 
 - -<>
 - -<>>
 - some-<>
 - some-<>>
 
-## Installation
 
 ```
-(ql:quickload :arrow-macros)
+(-<> 1 1+ #'1+ (1+) (lambda (x) (1+ x)))  ; => 5
 ```
+
+```
+(-<> 1
+  (+ 2)     ; => (+ 1 2)
+  (+ 3 <>)  ; => (+ 3 (+ 1 2))
+  (+ 4)     ; => (+ (+ 3 (+ 1 2) 4)  => 10
+```
+
+```
+(-<>> 1
+  (+ 2)     ; => (+ 2 1)
+  (+ <> 3)  ; => (+ (+ 2 1) 3)
+  (+ 4)     ; => (+ 4 (+ (+ 2 1) 3)) => 10
+```
+
+Arrow-macros can also write nested diamond-wands like:
+
+```
+(-<>> (list 1 2 3)
+  (mapcar #'1+)
+  (-<> <> (sort #'>))
+  (mapcar #'1+))       ; => (5 4 3)
+```
+
+```
+(-<> 1 (+ <> <>) (-<> (+ <> <> <>)))  ; => 6
+```
+
+Be aware that the inner diamond-wand can reference outer diamond symbol <> only in initial form.
+
+
 
 ## Notes
+
+(Nov 26, 2020)
+
+For author's misunderstading, diamond wand specification had been uncorrect (see issue <a href='https://github.com/hipeta/arrow-macros/issues/3'>#3</a>).
+It has been fixed and the changes can make this library independence from code walker so arrow-macros is now smaller and slimer than old version.
+
 
 (June 2015)
 
