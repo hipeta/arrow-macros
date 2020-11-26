@@ -82,7 +82,7 @@
                    ((and (listp exp) (diamond-wand-symbol-p (car exp)))
                     (rec (cadr exp)))
                    
-                   ((listp exp) (mapcar (lambda (x) (rec x)) exp))
+                   ((listp exp) (mapcar #'rec exp))
                    (t nil))))
     (let ((fexp (alexandria:flatten (rec exp))))
       (and fexp (reduce (lambda (a b) (or a b)) fexp)))))
