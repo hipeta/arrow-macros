@@ -126,7 +126,7 @@ This may be a unique feature in this library. <!> symbol ensure previous express
   (some-converter <> :encode (detect-encoding-of <>)))  ; => this sends http request for one time
 
 ```
-Original library (https://github.com/rplevy/swiss-arrows) doesn't have this feature. I need this for my local small project so add it. It doesn't change the original diamond wand behavior but if you found any problems or improvements, please report me.
+Original library (https://github.com/rplevy/swiss-arrows) doesn't have this feature. I need this for my local small project so add it. It doesn't change the original diamond wand behavior but if you find any problems or improvements, please report me.
 
 
 ## Notes
