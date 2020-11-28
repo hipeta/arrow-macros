@@ -112,7 +112,7 @@ This means some expressions in diamond wands can be evaluated for 2 or more time
 If you use expressions which have side effects in diamond wands, there is a risk that might happen what you don't intend.
 One solution is you don't use diamond wands for expressions containing side effects.
 Another solution is using <!> symbol in diamond wands.
-This may be a unique feature in this library. <!> symbol ensure previous expression evaluted only one time.
+This may be a unique feature in this library. <!> symbol ensure previous expression evaluted only once.
 
 ```
 (let ((x 0))
@@ -123,7 +123,7 @@ This may be a unique feature in this library. <!> symbol ensure previous express
         x))            ; => (4 1)
 
 (-<> (drakma:http-request <some-address>) <!>
-  (some-converter <> :encode (detect-encoding-of <>)))  ; => this sends http request for one time
+  (some-converter <> :encode (detect-encoding-of <>)))  ; => this sends http request only once
 
 ```
 Original library (https://github.com/rplevy/swiss-arrows) doesn't have this feature. I need this for my local small project so add it. It doesn't change the original diamond wand behavior but if you find any problems or improvements, please report me.
