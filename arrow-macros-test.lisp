@@ -204,3 +204,29 @@
                               (* 2 (-<> (+ 1) (+ <>)))))
              '(* 1 2 (+ (+ 1)))))
   (is (= 2 (-<> 1 (* 2 (-<> (+ 1) (+ <>)))))))
+
+(test diamond-wand-side-effect-test
+  (let ((x 0))
+    (labels ((f (a b) (incf x a) (incf x b)))
+      (is (= (-<> 1 (f <> <>) (+ x <> <>))         ; => (+ x (f 1 1) (f 1 1)) where x = 0
+             6))
+      (is (= x 4))))
+  (let ((x 0))
+    (labels ((f (a b) (incf x a) (incf x b)))
+      (is (= (-<> 1 (f <> <>) <!> (+ x <> <>))     ; => (+ x 2 2) where x = 2
+             6))
+      (is (= x 2))))
+  (let ((x 0))
+    (is (equal (list (-<> x
+                       incf
+                       (+ <> <>)
+                       (+ <> <>))
+                     x)
+               (list 10 4))))
+  (let ((x 0))
+    (is (equal (list (-<> x
+                       incf <!>
+                       (+ <> <>)
+                       (+ <> <>))
+                     x)
+               (list 4 1)))))

@@ -94,6 +94,39 @@ Arrow-macros can also write nested diamond-wands like:
 
 Be aware that the inner diamond-wand can refer to outer diamond symbol <> only in initial form.
 
+#### Side effect in diamond wand and <!> symbol
+
+Diamond wand can write multiple <> symbols in each expression.
+
+```
+(let ((x 0))
+  (list (-<> x
+          incf
+          (+ <> <>)
+          (+ <> <>))   ; => (+ (+ (incf x) (incf x)) (+ (incf x) (incf x))) => 10
+        x))            ; => (10 4)
+        
+```
+
+This means some expressions in diamond wands can be evaluated for 2 or more times.
+If you use expressions which have side effects in diamond wands, there is a risk that might happen what you don't intend.
+One solution is you don't use diamond wands for expressions containing side effects.
+Another solution is using <!> symbol in diamond wands.
+This may be a unique feature in this library. <!> symbol ensure previous expression evaluted only one time.
+
+```
+(let ((x 0))
+  (list (-<> x
+          incf <!>
+          (+ <> <>)
+          (+ <> <>))
+        x))            ; => (4 1)
+
+(-<> (drakma:http-request <some-address>) <!>
+  (some-converter <> :encode (detect-encoding-of <>)))  ; => this sends http request for one time
+
+```
+Original library (https://github.com/rplevy/swiss-arrows) doesn't have this feature. I need this for my local small project so add it. It doesn't change the original diamond wand behavior but if you found any problems or improvements, please report me.
 
 
 ## Notes

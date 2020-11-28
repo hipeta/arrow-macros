@@ -19,7 +19,8 @@
            :-<>>
            :some-<>
            :some-<>>
-           :<>))
+           :<>
+           :<!>))
 (in-package :arrow-macros)
 
 (defun arrow-macro (init exps &optional >>-p some-p)
@@ -99,34 +100,41 @@
         ((listp exp) (mapcar (lambda (x) (replace-diamond x diamond-exp)) exp))
         (t exp)))
 
+(defun diamond-wand% (diamond-exp exps some-p)
+  (let ((gblock (gensym)))
+    (labels ((rec (diamond-exp exps)
+               (let ((diamond-exp (if some-p
+                                      `(or ,diamond-exp (return-from ,gblock nil))
+                                      diamond-exp)))
+                 (cond ((eq (car exps) '<!>)
+                        (let ((gvar (gensym)))
+                          `(let ((,gvar ,diamond-exp))
+                             ,(rec gvar (cdr exps)))))
+                       (exps (rec (replace-diamond (car exps) diamond-exp) (cdr exps)))
+                       (t (if some-p
+                              (cadr diamond-exp) ; outermost parenthesis shouldn't be sandwiched by `(or ~~ (return-from ,gblock nil))
+                              diamond-exp))))))
+      (if some-p
+          `(block ,gblock ,(rec diamond-exp exps))
+          (rec diamond-exp exps)))))
+
 (defun diamond-wand (init exps &optional >>-p some-p)
-  (let* (; preprocessing for lambda, function, one symbol expressions
-         (exps (loop for exp in exps collect (cond ((symbolp exp) `(,exp))
+  (let* (; preprocessing for lambda, function, <!>, one symbol expressions
+         (exps (loop for exp in exps collect (cond ((and (symbolp exp)
+                                                         (not (eq exp '<!>)) `(,exp)))
                                                    ((and (consp exp) (eq 'function (car exp)))
                                                     `(funcall ,exp <>))
                                                    ((and (consp exp) (eq 'lambda (car exp)))
                                                     `(funcall ,exp <>))
                                                    (t exp))))
          ; supplement expressions with diamond symbols
-         (exps (loop for exp in exps collect (cond ((has-diamond exp) exp)
+         (exps (loop for exp in exps collect (cond ((eq '<!> exp) exp)
+                                                   ((has-diamond exp) exp)
                                                    (>>-p
                                                     `(,(car exp) ,@(cdr exp) <>))
                                                    (t
                                                     `(,(car exp) <> ,@(cdr exp)))))))
-    (if some-p
-        (let* ((gblock (gensym))
-               (diamond-exp `(or ,init (return-from ,gblock nil))))
-          (loop for exp in exps do
-            (setf diamond-exp (replace-diamond exp diamond-exp)
-                  diamond-exp `(or ,diamond-exp (return-from ,gblock nil))))
-          
-          ; outermost parenthesis shouldn't be sandwiched by `(or ~~ (return-from ,gblock nil))
-          (setf diamond-exp (cadr diamond-exp))
-          
-          `(block ,gblock ,diamond-exp))
-        (let ((diamond-exp init))
-          (loop for exp in exps do (setf diamond-exp (replace-diamond exp diamond-exp)))
-          diamond-exp))))
+    (diamond-wand% init exps some-p)))
 
 (defmacro -<> (init &body exps) (diamond-wand init exps))
 (defmacro -<>> (init &body exps) (diamond-wand init exps t))
